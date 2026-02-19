@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -42,25 +42,23 @@ function App() {
   };
 
   // Fetch jobs when logged in
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchJobs();
-    }
-  }, [isLoggedIn]);
-
   const fetchJobs = async () => {
     const token = localStorage.getItem("token");
+
     const endpoint =
       user.role === "admin"
         ? "https://localhost:3000/api/jobs"
-        : "http://localhost:3000/api/jobs/assigned";
+        : `http://localhost:3000/api/jobs/my-jobs?employee_id=${user.id}`;
 
-    const response = await fetch(endpoint, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-      setJobs(data);
-    };
+    try {
+      const response = await fetch(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setJobs(data.jobs || []);
+    } catch (err) {
+      console.error("Failed to fetch jobs:", err);
+    }
   };
 
   // If logged in, show dashboard
