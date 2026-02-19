@@ -7,6 +7,13 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
+  const [jobs, setJobs] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [newJob, setNewJob] = useState({
+    customer_name: "",
+    address: "",
+    employee_id: "",
+  });
 
   // Handle login form submission
   const handleLogin = async (e) => {
@@ -32,6 +39,28 @@ function App() {
     } catch (err) {
       setError("Connection error:", err);
     }
+  };
+
+  // Fetch jobs when logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchJobs();
+    }
+  }, [isLoggedIn]);
+
+  const fetchJobs = async () => {
+    const token = localStorage.getItem("token");
+    const endpoint =
+      user.role === "admin"
+        ? "https://localhost:3000/api/jobs"
+        : "http://localhost:3000/api/jobs/assigned";
+
+    const response = await fetch(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await response.json();
+      setJobs(data);
+    };
   };
 
   // If logged in, show dashboard
