@@ -33,6 +33,7 @@ function App() {
 
       if (response.ok) {
         setUser(data.user);
+        setToken(data.token);
         setIsLoggedIn(true);
         localStorage.setItem("token", data.token);
       } else {
@@ -81,7 +82,8 @@ function App() {
     }
   };
 
-  const handleCreateJob = async (req, res) => {
+  const handleCreateJob = async (e) => {
+    e.preventDefault();
     try {
       const response = await fetch("http://localhost:3000/api/jobs/create", {
         method: "POST",
@@ -125,54 +127,40 @@ function App() {
     setPassword("");
   };
 
-  return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="logo-section">
-          <div className="logo-large">Doxa Cleaning</div>
-          <h1>Doxa Cleaning</h1>
-          <p className="subtitle">Sign in to your account</p>
-        </div>
-
-        <div className="login-card">
-          {error && <div className="error-message">{error}</div>}
-
-          <form onSubmit={handleLogin} className="login-form">
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            <button type="submit" className="login-button">
-              Sign In
-            </button>
-          </form>
-
-          <div className="test-credentials">
-            <p>Test Credentials</p>
-            <p>
-              <code>admin@doxacleaning.com</code> / <code>admin123</code>
+  if (isLoggedIn) {
+    return (
+      <div className="dashboard">
+        <div className="navbar">
+          <div>
+            <h2 style={{ margin: 0 }}>Doxa Cleaning</h2>
+            <p style={{ margin: 0, fontSize: "14px", color: "#666" }}>
+              {user.role === "admin" ? "Admin Dashboard" : "My Jobs"}- Welcome,
+              {""}
+              {user.name}
             </p>
+          </div>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            {user.role === "admin" && (
+              <button className="create-btn" onClick={openCreateModal}>
+                + Create Job
+              </button>
+            )}
+            <button
+              className="cancel-btn"
+              onClick={handleLogout}
+              style={{
+                padding: "10px 20px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
-
 export default App;
