@@ -8,6 +8,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
 
+  // Handle login form submission
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -31,6 +32,7 @@ function App() {
     }
   };
 
+  // If user is logged in, show dashboard (Placeholder for now)
   if (isLoggedIn) {
     return (
       <div className="dashboard">
@@ -58,6 +60,7 @@ function App() {
     );
   }
 
+  // If not logged in, show login form
   return (
     <div className="login">
       <h1>Doxa Cleaning Login</h1>
