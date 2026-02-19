@@ -11,6 +11,8 @@ function App() {
   // Handle login form submission
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
       const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
@@ -32,58 +34,62 @@ function App() {
     }
   };
 
-  // If user is logged in, show dashboard (Placeholder for now)
+  // If logged in, show dashboard
   if (isLoggedIn) {
     return (
       <div className="dashboard">
-        <h1>Doxa Cleaning Dashboard (UNDER CONSTRUCTION)</h1>
-        <p>Welcome, {user.name}!</p>
+        <h1>Welcome, {user.name}!</h1>
         <p>Role: {user.role}</p>
-        <p>Email: {user.email}</p>
         <button onClick={() => setIsLoggedIn(false)}>Logout</button>
-        <div
-          style={{
-            marginTop: "40px",
-            padding: "20px",
-            border: "2px dashed #ccc",
-          }}
-        >
-          <h2>TODO:</h2>
-          <ul>
-            <li>Build job list view</li>
-            <li>Build job creation form</li>
-            <li>Build employee dashboard</li>
-            <li>Add proper styling</li>
-          </ul>
-        </div>
       </div>
     );
   }
 
-  // If not logged in, show login form
   return (
-    <div className="login">
-      <h1>Doxa Cleaning Login</h1>
-      <p style={{ color: "#666" }}>Frontend is under construction</p>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Login</button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </form>
-      <div style={{ marginTop: "20px", fontSize: "12px", color: "#999" }}>
-        <p>Test credentials:</p>
-        <p>admin@doxacleaning.com / admin123</p>
+    <div className="login-page">
+      <div className="login-container">
+        <div className="logo-section">
+          <div className="logo-large">Doxa Cleaning</div>
+          <h1>Doxa Cleaning</h1>
+          <p className="subtitle">Sign in to your account</p>
+        </div>
+
+        <div className="login-card">
+          {error && <div className="error-message">{error}</div>}
+
+          <form onSubmit={handleLogin} className="login-form">
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="login-button">
+              Sign In
+            </button>
+          </form>
+
+          <div className="test-credentials">
+            <p>Test Credentials</p>
+            <p>
+              <code>admin@doxacleaning.com</code> / <code>admin123</code>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
