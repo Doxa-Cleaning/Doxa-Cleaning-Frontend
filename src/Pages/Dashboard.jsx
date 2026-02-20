@@ -55,7 +55,12 @@ function Dashboard({ user, token, onLogout }) {
       fetch("http://localhost:3000/api/employees", {
         headers: { Authorization: `Bearer ${token}` },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`Failed to fetch employees: ${res.status}`);
+          }
+          return res.json();
+        })
         .then((data) => setEmployees(data.employees || []))
         .catch((err) => console.error("Failed to fetch employees:", err));
     }
@@ -84,6 +89,11 @@ function Dashboard({ user, token, onLogout }) {
       const response = await fetch("http://localhost:3000/api/employees", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to fetch employees:", response.status, errorData);
+        return;
+      }
       const data = await response.json();
       setEmployees(data.employees || []);
     } catch (err) {
@@ -152,7 +162,6 @@ function Dashboard({ user, token, onLogout }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           name: newEmployee.name,
