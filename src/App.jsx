@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
-import LoginPage from "./Pages/LoginPage";
-import RegisterPage from "./Pages/RegisterPage";
+import LoginPage from "./Pages/loginPage";
 import Dashboard from "./Pages/Dashboard";
 
 function App() {
@@ -36,10 +35,6 @@ function App() {
               <LoginPage onLoginSuccess={handleLoginSuccess} />
             )
           }
-        />
-        <Route
-          path="/register"
-          element={isLoggedIn ? <Navigate to="/dashboard" /> : <RegisterPage />}
         />
         <Route
           path="/dashboard"
