@@ -4,14 +4,17 @@ import { useNavigate } from "react-router-dom";
 function Dashboard({ user, token, onLogout }) {
   const [jobs, setJobs] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   // Modals
   const [showJobModal, setShowJobModal] = useState(false);
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [showEmployeeList, setShowEmployeeList] = useState(false);
   const [showDeleteJobModal, setShowDeleteJobModal] = useState(false);
+  const [showDeleteEmployeeModal, setShowDeleteEmployeeModal] = useState(false);
 
   // Filter
   const [filterEmployee, setFilterEmployee] = useState("");
@@ -24,6 +27,17 @@ function Dashboard({ user, token, onLogout }) {
     scheduled_time: "",
     estimated_duration: "",
   });
+  const [customerSearch, setCustomerSearch] = useState("");
+  const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
+    street_add1: "",
+    street_add2: "",
+    city: "",
+    state: "",
+    zip_code: "",
+    phone: "",
+  });
 
   // Create employee form
   const [newEmployee, setNewEmployee] = useState({
@@ -35,7 +49,6 @@ function Dashboard({ user, token, onLogout }) {
 
   const [employeeSuccess, setEmployeeSuccess] = useState("");
   const [employeeError, setEmployeeError] = useState("");
-  const [jobToDelete, setJobToDelete] = useState("");
 
   const navigate = useNavigate();
 
@@ -59,14 +72,16 @@ function Dashboard({ user, token, onLogout }) {
       fetch("http://localhost:3000/api/employees", {
         headers: { Authorization: `Bearer ${token}` },
       })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(`Failed to fetch employees: ${res.status}`);
-          }
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((data) => setEmployees(data.employees || []))
         .catch((err) => console.error("Failed to fetch employees:", err));
+
+      fetch("http://localhost:3000/api/customers", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setCustomers(data.customers || []))
+        .catch((err) => console.error("Failed to fetch customers:", err));
     }
   }
 
@@ -105,6 +120,23 @@ function Dashboard({ user, token, onLogout }) {
     }
   };
 
+  const fetchCustomers = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/customers", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to fetch customers:", response.status, errorData);
+        return;
+      }
+      const data = await response.json();
+      setCustomers(data.customers || []);
+    } catch (err) {
+      console.error("Failed to fetch customers:", err);
+    }
+  };
+
   // ---------- Actions ----------
   const handleComplete = async (jobId) => {
     try {
@@ -124,6 +156,29 @@ function Dashboard({ user, token, onLogout }) {
   const handleCreateJob = async (e) => {
     e.preventDefault();
     try {
+      let customerId = newJob.customer_id;
+
+      // If admin filled out new customer form, create that customer first
+      if (showNewCustomerForm) {
+        const customerRes = await fetch("http://localhost:3000/api/customers", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(newCustomer),
+        });
+        if (!customerRes.ok) {
+          console.error("Failed to create customer");
+          return;
+        }
+
+        const customerData = await customerRes.json();
+        customerId = customerData.customer.id;
+        fetchCustomers();
+      }
+
+      // Creates job using whichever customerId we ended up with
       const response = await fetch("http://localhost:3000/api/jobs", {
         method: "POST",
         headers: {
@@ -132,7 +187,7 @@ function Dashboard({ user, token, onLogout }) {
         },
         body: JSON.stringify({
           employee_id: newJob.employee_id,
-          customer_id: newJob.customer_id,
+          customer_id: customerId,
           status: "pending",
           scheduled_date: newJob.scheduled_date,
           scheduled_time: newJob.scheduled_time,
@@ -141,6 +196,7 @@ function Dashboard({ user, token, onLogout }) {
       });
 
       if (response.ok) {
+        // Resets everything
         setShowJobModal(false);
         setNewJob({
           employee_id: "",
@@ -149,6 +205,17 @@ function Dashboard({ user, token, onLogout }) {
           scheduled_time: "",
           estimated_duration: "",
         });
+        setNewCustomer({
+          name: "",
+          street_add1: "",
+          street_add2: "",
+          city: "",
+          state: "",
+          zip_code: "",
+          phone: "",
+        });
+        setShowNewCustomerForm(false);
+        setCustomerSearch("");
         fetchJobs();
       }
     } catch (err) {
@@ -201,6 +268,7 @@ function Dashboard({ user, token, onLogout }) {
           `http://localhost:3000/api/employees/${id}`,
           {
             method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
           },
         );
 
@@ -629,40 +697,210 @@ function Dashboard({ user, token, onLogout }) {
           <div className="modal">
             <h2>Create New Job</h2>
             <form onSubmit={handleCreateJob}>
-              <div className="form-group">
-                <label>Job Name</label>
-                <input
-                  type="varchar"
-                  value={newJob.job_name}
-                  onChange={(e) =>
-                    setNewJob({ ...newJob, customer_id: e.target.value })
-                  }
-                  placeholder="Enter customer ID"
-                  required
-                />
+              {/* CUSTOMER SELECTION */}
+              <div classNAme="form-group">
+                <label>Customer </label>
+                {!showNewCustomerForm ? (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Search existing customers..."
+                      value={customerSearch}
+                      onChange={(e) => {
+                        setCustomerSearch(e.target.value);
+                        setNewJob({ ...newJob, customer_id: "" });
+                      }}
+                    />
+                    {/* Filtered dropdown */}
+                    {customerSearch && (
+                      <div
+                        style={{
+                          border: "2px solid var(--gray-200)",
+                          borderRadius: "10px",
+                          marginTop: "6px",
+                          maxHeight: "160px",
+                          overflowY: "auto",
+                          background: "white",
+                        }}
+                      >
+                        {customers
+                          .filter((c) =>
+                            c.name
+                              .toLowerCase()
+                              .includes(customerSearch.toLowerCase()),
+                          )
+                          .map((c) => (
+                            <div
+                              key={c.id}
+                              onClick={() => {
+                                setNewJob({ ...newJob, customer_id: c.id });
+                                setCustomerSearch(c.name);
+                              }}
+                              style={{
+                                padding: "10px 16px",
+                                cursor: "pointer",
+                                borderBottom: "1px solid var(--gray-100)",
+                                background:
+                                  newJob.customer_id === c.id
+                                    ? "var(--secondary-blue)"
+                                    : "white",
+                              }}
+                              onMouseOver={(e) =>
+                                (e.currentTarget.style.background =
+                                  "var(--gray-500")
+                              }
+                              onMouseOut={(e) =>
+                                (e.currentTarget.style.background =
+                                  newJob.customer_id === c.id
+                                    ? "var(--secondary-blue)"
+                                    : "white")
+                              }
+                            >
+                              <p style={{ margin: 0, fontWeight: 600 }}>
+                                {c.name}
+                              </p>
+                              <p
+                                style={{
+                                  margin: 0,
+                                  fontSize: "12px",
+                                  color: "var(--gray-500)",
+                                }}
+                              >
+                                {c.street_add1}, {c.city}, {c.state}
+                              </p>
+                            </div>
+                          ))}
+                        {customers.filter((c) =>
+                          c.name
+                            .toLowerCase()
+                            .includes(customerSearch.toLowerCase()),
+                        ).length === 0 && (
+                          <p
+                            style={{
+                              padding: "10px 16px",
+                              color: "var(--gray-500)",
+                              margin: 0,
+                            }}
+                          >
+                            No customers found
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewCustomerForm(true);
+                        setCustomerSearch("");
+                        setNewJob({ ...newJob, customer_id: "" });
+                      }}
+                      style={{
+                        marginTop: "8px",
+                        background: "none",
+                        border: "none",
+                        color: "var(--primary-blue)",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        padding: 0,
+                        fontSize: "14px",
+                      }}
+                    >
+                      + New Customer
+                    </button>
+                  </>
+                ) : (
+                  // INLINE NEW CUSTOMER FORM
+                  <div
+                    style={{
+                      border: "2px solid var(--primary-blue)",
+                      borderRadius: "10px",
+                      padding: "16px",
+                      marginTop: "8px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "12px",
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontWeight: 600,
+                          color: "var(--primary-blue)",
+                        }}
+                      >
+                        New Customer
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNewJob(false);
+                          setShowNewCustomerForm(false);
+                          setNewCustomer({
+                            name: "",
+                            street_add1: "",
+                            street_add2: "",
+                            city: "",
+                            state: "",
+                            zip_code: "",
+                            phone: "",
+                          });
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "var(--gray-500)",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    {[
+                      { label: "Full Name", key: "name", required: true },
+                      { label: "Address", key: "street_add1", required: true },
+                      {
+                        label: "Address Line 2",
+                        key: "street_add2",
+                        required: false,
+                      },
+                      { label: "City", key: "city", required: true },
+                      {
+                        label: "State (2 letters)",
+                        key: "state",
+                        required: true,
+                      },
+                      { label: "Zip Code", key: "zip_code", required: true },
+                      { label: "Phone", key: "phone", required: true },
+                    ].map(({ label, key, required }) => (
+                      <div
+                        className="form-group"
+                        key={key}
+                        style={{ marginBottom: "12px" }}
+                      >
+                        <label>{label}</label>
+                        <input
+                          type="text"
+                          value={newCustomer[key]}
+                          onChange={(e) =>
+                            setNewCustomer({
+                              ...newCustomer,
+                              [key]: e.target.value,
+                            })
+                          }
+                          required={required}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="form-group">
-                <label>Scheduled Date</label>
-                <input
-                  type="date"
-                  value={newJob.scheduled_date}
-                  onChange={(e) =>
-                    setNewJob({ ...newJob, scheduled_date: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Scheduled Time</label>
-                <input
-                  type="time"
-                  value={newJob.scheduled_time}
-                  onChange={(e) =>
-                    setNewJob({ ...newJob, scheduled_time: e.target.value })
-                  }
-                  required
-                />
-              </div>
+
+              {/* EMPLOYEE, DATE, TIME */}
               <div className="form-group">
                 <label>Assign to Employee</label>
                 <select
@@ -688,15 +926,46 @@ function Dashboard({ user, token, onLogout }) {
                   ))}
                 </select>
               </div>
+              <div className="form-group">
+                <label>Scheduled Date</label>
+                <input
+                  type="date"
+                  value={newJob.scheduled_date}
+                  onChange={(e) =>
+                    setNewJob({ ...newJob, scheduled_date: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Scheduled Time</label>
+                <input
+                  type="time"
+                  value={newJob.scheduled_time}
+                  onChange={(e) =>
+                    setNewJob({ ...newJob, scheduled_time: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
               <div className="modal-buttons">
                 <button
                   type="button"
                   className="cancel-btn"
-                  onClick={() => setShowJobModal(false)}
+                  onClick={() => {
+                    setShowJobModal(false);
+                    setShowNewCustomerForm(false);
+                    setCustomerSearch("");
+                  }}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="submit-btn">
+                <button
+                  type="submit"
+                  className="submit-btn"
+                  disabled={!showNewCustomerForm && !newJob.customer_id}
+                >
                   Create Job
                 </button>
               </div>
@@ -850,6 +1119,56 @@ function Dashboard({ user, token, onLogout }) {
                 </button>
               </div>
             </form>
+          </div>
+        </>
+      )}
+      {/* ========== DELETE EMPLOYEE MODAL ========== */}
+      {showDeleteEmployeeModal && (
+        <>
+          <div
+            className="modal-overlay"
+            onClick={() => setShowDeleteEmployeeModal(false)}
+          />
+          <div className="modal">
+            <h2>Delete Employee</h2>
+            <div className="form-group">
+              <label>Select Employee to Delete</label>
+              <select
+                value={selectedEmployeeId || ""} // Bind State
+                onChange={(e) => setSelectedEmployeeId(Number(e.target.value))} // Updates state on change
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  border: "2px solid var(--gray-200)",
+                  borderRadius: "10px",
+                  fontSize: "15px",
+                  backgroundColor: "var(--gray-50)",
+                }}
+              >
+                <option value="">Select Employee...</option>
+                {employees.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.users.name} - {employee.id}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="modal-buttons">
+              <button
+                className="cancel-btn"
+                onClick={() => setShowDeleteEmployeeModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="delete-btn"
+                onClick={handleDeleteEmployee}
+                disabled={!selectedEmployeeId}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </>
       )}
