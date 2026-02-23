@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import doxaLogo from "../Assets/Doxa-Logo.png";
+import doxaLettering from "../Assets/Doxa-Lettering.png";
 
 function LoginPage({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
@@ -35,14 +37,18 @@ function LoginPage({ onLoginSuccess }) {
     <div className="login-page">
       <div className="login-container">
         <div className="logo-section">
-          <div className="logo-large">D</div>
-          <h1>Doxa Cleaning</h1>
-          <p className="subtitle">Sign in to your account</p>
+          <img src={doxaLogo} className="logo" alt="Doxa Logo" />
+          <img
+            src={doxaLettering}
+            className="lettering"
+            alt="Doxa Lettering"
+          />{" "}
         </div>
         <div className="login-card">
           {error && <div className="error-message">{error}</div>}
           <form onSubmit={handleLogin} className="login-form">
             <div className="form-group">
+              <p className="subtitle">Sign in to your account</p>
               <label>Email</label>
               <input
                 type="email"

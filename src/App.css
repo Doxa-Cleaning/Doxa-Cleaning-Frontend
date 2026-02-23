@@ -11,6 +11,7 @@
   --primary-blue-light: #3b82f6;
   --secondary-blue: #dbeafe;
   --accent-blue: #60a5fa;
+  --primary-red: #ff0000;
 
   /* Card accent colors */
   --green: #10b981;
@@ -55,7 +56,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(
+    135deg,
+    rgb(178, 216, 255) 0%,
+    rgb(255, 255, 255) 100%
+  );
   padding: 20px;
 }
 
@@ -95,8 +100,11 @@ body {
 }
 
 .subtitle {
+  display: flex;
   color: var(--gray-500);
-  font-size: 14px;
+  font-size: 18px;
+  padding-bottom: 20px;
+  justify-content: center;
 }
 
 .login-card {
@@ -332,6 +340,16 @@ body {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.delete-btn {
+  padding: 10px 20px;
+  background: var(--primary-red);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: white;
 }
 
 /* Simple Modal */

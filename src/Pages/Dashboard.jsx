@@ -5,11 +5,13 @@ function Dashboard({ user, token, onLogout }) {
   const [jobs, setJobs] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState(null);
 
   // Modals
   const [showJobModal, setShowJobModal] = useState(false);
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [showEmployeeList, setShowEmployeeList] = useState(false);
+  const [showDeleteJobModal, setShowDeleteJobModal] = useState(false);
 
   // Filter
   const [filterEmployee, setFilterEmployee] = useState("");
@@ -30,8 +32,10 @@ function Dashboard({ user, token, onLogout }) {
     password: "",
     phone: "",
   });
+
   const [employeeSuccess, setEmployeeSuccess] = useState("");
   const [employeeError, setEmployeeError] = useState("");
+  const [jobToDelete, setJobToDelete] = useState("");
 
   const navigate = useNavigate();
 
@@ -190,6 +194,49 @@ function Dashboard({ user, token, onLogout }) {
     }
   };
 
+  const handleDeleteEmployee = async (id) => {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/employees/${id}`,
+          {
+            method: "DELETE",
+          },
+        );
+
+        if (response.ok) {
+          // Refresh employee list without deleted employees
+          console.log("Employee deleted successfully");
+        }
+      } catch (err) {
+        console.error("Error deleting employee:", err);
+      }
+    }
+  };
+
+  const handleDeleteJob = async () => {
+    if (window.confirm("Are you sure you want to delete this job?")) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/jobs/${selectedJobId}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        if (!response.ok) throw new Error("Failed to delete job");
+
+        // Remove deleted job from local state
+        setJobs(jobs.filter((job) => job.id !== selectedJobId));
+        setShowDeleteJobModal(false);
+        setSelectedJobId(null);
+      } catch (err) {
+        console.error("Error deleting job:", err);
+      }
+    }
+  };
+
   const handleLogout = () => {
     onLogout();
     navigate("/login");
@@ -227,11 +274,23 @@ function Dashboard({ user, token, onLogout }) {
                 + Create Job
               </button>
               <button
+                className="delete-btn"
+                onClick={() => setShowDeleteJobModal(true)}
+              >
+                - Delete Job
+              </button>
+              <button
                 className="create-btn"
                 onClick={() => setShowEmployeeModal(true)}
                 style={{ background: "var(--green)" }}
               >
                 + Add Employee
+              </button>
+              <button
+                className="delete-btn"
+                onClick={() => setShowEmployeeModal(true)}
+              >
+                - Delete Employee
               </button>
               <button
                 className="create-btn"
@@ -256,7 +315,6 @@ function Dashboard({ user, token, onLogout }) {
           </button>
         </div>
       </div>
-
       {/* Admin Stats Bar */}
       {user.role === "admin" && (
         <div
@@ -373,7 +431,6 @@ function Dashboard({ user, token, onLogout }) {
           </div>
         </div>
       )}
-
       {/* Employee Filter (admin only) */}
       {user.role === "admin" && employees.length > 0 && (
         <div style={{ marginBottom: "20px" }}>
@@ -398,7 +455,6 @@ function Dashboard({ user, token, onLogout }) {
           </select>
         </div>
       )}
-
       {/* Employee List Panel */}
       {showEmployeeList && user.role === "admin" && (
         <div
@@ -491,7 +547,6 @@ function Dashboard({ user, token, onLogout }) {
           )}
         </div>
       )}
-
       {/* Jobs Grid */}
       {filteredJobs.length === 0 ? (
         <div
@@ -541,8 +596,14 @@ function Dashboard({ user, token, onLogout }) {
               {job.employee_name && <p>Assigned to: {job.employee_name}</p>}
               {job.scheduled_date && (
                 <p>
-                  Date: {new Date(job.scheduled_date).toLocaleDateString()} at{" "}
-                  {job.scheduled_time}
+                  {new Date(job.scheduled_date).toLocaleDateString()} at{" "}
+                  {new Date(
+                    `1970-01-01T${job.scheduled_time}`,
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
                 </p>
               )}
               <span className={`status-badge ${job.status}`}>{job.status}</span>
@@ -558,7 +619,6 @@ function Dashboard({ user, token, onLogout }) {
           ))}
         </div>
       )}
-
       {/* ========== CREATE JOB MODAL ========== */}
       {showJobModal && (
         <>
@@ -570,10 +630,10 @@ function Dashboard({ user, token, onLogout }) {
             <h2>Create New Job</h2>
             <form onSubmit={handleCreateJob}>
               <div className="form-group">
-                <label>Customer ID</label>
+                <label>Job Name</label>
                 <input
-                  type="number"
-                  value={newJob.customer_id}
+                  type="varchar"
+                  value={newJob.job_name}
                   onChange={(e) =>
                     setNewJob({ ...newJob, customer_id: e.target.value })
                   }
@@ -644,7 +704,56 @@ function Dashboard({ user, token, onLogout }) {
           </div>
         </>
       )}
-
+      {/* ========== DELETE JOB MODAL ========== */}
+      {showDeleteJobModal && (
+        <>
+          <div
+            className="modal-overlay"
+            onClick={() => setShowDeleteJobModal(false)}
+          />
+          <div className="modal">
+            <h2>Delete Job</h2>
+            <div className="form-group">
+              <label>Select Job to Delete</label>
+              <select
+                value={selectedJobId || ""} // Bind State
+                onChange={(e) => setSelectedJobId(Number(e.target.value))} // Updates state on change
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  border: "2px solid var(--gray-200)",
+                  borderRadius: "10px",
+                  fontSize: "15px",
+                  backgroundColor: "var(--gray-50)",
+                }}
+              >
+                <option value="">Select job...</option>
+                {jobs.map((job) => (
+                  <option key={job.id} value={job.id}>
+                    {job.customer_name} - {job.status}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="modal-buttons">
+              <button
+                className="cancel-btn"
+                onClick={() => setShowDeleteJobModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="delete-btn"
+                onClick={handleDeleteJob}
+                disabled={!selectedJobId}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </>
+      )}
       {/* ========== CREATE EMPLOYEE MODAL ========== */}
       {showEmployeeModal && (
         <>
@@ -747,4 +856,5 @@ function Dashboard({ user, token, onLogout }) {
     </div>
   );
 }
+
 export default Dashboard;
