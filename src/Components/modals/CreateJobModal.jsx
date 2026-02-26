@@ -1,20 +1,25 @@
-import { useState } from "react";
-
-{
-  /* ========== CREATE JOB MODAL ========== */
-}
-function createJobModal({}) {
-  const [showJobModal, setShowJobModal] = useState(false);
-  const [showEmployeeList, setShowEmployeeList] = useState(false);
-
-  showJobModal && (
+function CreateJobModal({
+  handleCreateJob,
+  showNewCustomerForm,
+  customerSearch,
+  setCustomerSearch,
+  setNewJob,
+  newJob,
+  customers,
+  employees,
+  setShowNewCustomerForm,
+  newCustomer,
+  setNewCustomer,
+  onClose,
+}) {
+  return (
     <>
-      <div className="modal-overlay" onClick={() => setShowJobModal(false)} />
+      <div className="modal-overlay" onClick={onClose} />
       <div className="modal">
         <h2>Create New Job</h2>
         <form onSubmit={handleCreateJob}>
           {/* CUSTOMER SELECTION */}
-          <div classNAme="form-group">
+          <div className="form-group">
             <label>Customer </label>
             {!showNewCustomerForm ? (
               <>
@@ -151,8 +156,8 @@ function createJobModal({}) {
                   <button
                     type="button"
                     onClick={() => {
-                      setNewJob(false);
                       setShowNewCustomerForm(false);
+                      onClose();
                       setNewCustomer({
                         name: "",
                         street_add1: "",
@@ -268,9 +273,9 @@ function createJobModal({}) {
               type="button"
               className="cancel-btn"
               onClick={() => {
-                setShowJobModal(false);
                 setShowNewCustomerForm(false);
                 setCustomerSearch("");
+                onClose();
               }}
             >
               Cancel
@@ -288,3 +293,5 @@ function createJobModal({}) {
     </>
   );
 }
+
+export default CreateJobModal;

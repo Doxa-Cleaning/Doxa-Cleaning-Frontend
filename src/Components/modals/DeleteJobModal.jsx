@@ -1,16 +1,13 @@
-import { useState } from "react";
-{
-  /* ========== DELETE JOB MODAL ========== */
-}
-function deleteJobModal({}) {
-  const [showDeleteJobModal, setShowDeleteJobModal] = useState(false);
-
-  showDeleteJobModal && (
+function DeleteJobModal({
+  selectedJobId,
+  setSelectedJobId,
+  jobs,
+  handleDeleteJob,
+  onClose,
+}) {
+  return (
     <>
-      <div
-        className="modal-overlay"
-        onClick={() => setShowDeleteJobModal(false)}
-      />
+      <div className="modal-overlay" onClick={onClose} />
       <div className="modal">
         <h2>Delete Job</h2>
         <div className="form-group">
@@ -37,10 +34,7 @@ function deleteJobModal({}) {
           </select>
         </div>
         <div className="modal-buttons">
-          <button
-            className="cancel-btn"
-            onClick={() => setShowDeleteJobModal(false)}
-          >
+          <button className="cancel-btn" onClick={onClose}>
             Cancel
           </button>
           <button
@@ -55,3 +49,5 @@ function deleteJobModal({}) {
     </>
   );
 }
+
+export default DeleteJobModal;

@@ -1,17 +1,16 @@
-import { useState } from "react";
-
-{
-  /* ========== CREATE EMPLOYEE MODAL ========== */
-}
-function createEmployeeModal({}) {
-  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
-
-  showEmployeeModal && (
+function CreateEmployeeModal({
+  employeeError,
+  employeeSuccess,
+  newEmployee,
+  handleCreateEmployee,
+  setNewEmployee,
+  setEmployeeError,
+  setEmployeeSuccess,
+  onClose,
+}) {
+  return (
     <>
-      <div
-        className="modal-overlay"
-        onClick={() => setShowEmployeeModal(false)}
-      />
+      <div className="modal-overlay" onClick={onClose} />
       <div className="modal">
         <h2>Add New Employee</h2>
         {employeeError && <div className="error-message">{employeeError}</div>}
@@ -83,9 +82,9 @@ function createEmployeeModal({}) {
               type="button"
               className="cancel-btn"
               onClick={() => {
-                setShowEmployeeModal(false);
                 setEmployeeError("");
                 setEmployeeSuccess("");
+                onClose();
               }}
             >
               Cancel
@@ -103,3 +102,5 @@ function createEmployeeModal({}) {
     </>
   );
 }
+
+export default CreateEmployeeModal;
