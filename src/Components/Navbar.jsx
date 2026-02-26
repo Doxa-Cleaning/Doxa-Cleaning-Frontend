@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-{
-  /* Navbar */
-}
-<div className="navbar">
+function navBar ({}) { 
+    return ( <div className="navbar">
   <div>
     <h2 style={{ margin: 0 }}>Doxa Cleaning</h2>
     <p style={{ margin: 0, fontSize: "14px", color: "#666" }}>
@@ -59,6 +57,7 @@ import { useNavigate } from "react-router-dom";
       Logout
     </button>
   </div>
-</div>;
-
+</div> 
+)
+}
 export;
