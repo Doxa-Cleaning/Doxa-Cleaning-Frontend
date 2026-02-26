@@ -1,88 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Create job form
-const [newJob, setNewJob] = useState({
-employee_id: "",
-customer_id: "",
-scheduled_date: "",
-scheduled_time: "",
-estimated_duration: "",
-});
-const [customerSearch, setCustomerSearch] = useState("");
-const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
-const [newCustomer, setNewCustomer] = useState({
-name: "",
-street_add1: "",
-street_add2: "",
-city: "",
-state: "",
-zip_code: "",
-phone: "",
-});
+function useFunctionLogic({
+  user,
+  token,
+  onLogout,
+  jobs,
+  setJobs,
+  employees,
+  setEmployees,
+  customers,
+  setCustomers,
+  selectedJobId,
+  setSelectedJobId,
+  fetchJobs,
+  fetchEmployees,
+  fetchCustomers,
+}) {
+  const [newJob, setNewJob] = useState({
+    employee_id: "",
+    customer_id: "",
+    scheduled_date: "",
+    scheduled_time: "",
+    estimated_duration: "",
+  });
+  const [customerSearch, setCustomerSearch] = useState("");
+  const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
+    street_add1: "",
+    street_add2: "",
+    city: "",
+    state: "",
+    zip_code: "",
+    phone: "",
+  });
+  // Create employee form
+  const [newEmployee, setNewEmployee] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+  });
+  const [filterEmployee, setFilterEmployee] = useState("");
+  const [employeeSuccess, setEmployeeSuccess] = useState("");
+  const [employeeError, setEmployeeError] = useState("");
+  const navigate = useNavigate();
 
-// Create employee form
-const [newEmployee, setNewEmployee] = useState({
-name: "",
-email: "",
-password: "",
-phone: "",
-});
-const [filterEmployee, setFilterEmployee] = useState("");
-const [employeeSuccess, setEmployeeSuccess] = useState("");
-const [employeeError, setEmployeeError] = useState("");
-const navigate = useNavigate();
-
-// ---------- Fetch helpers ----------
-const fetchJobs = async () => {
-const endpoint =
-    user.role === "admin"
-    ? "http://localhost:3000/api/jobs"
-    : `http://localhost:3000/api/jobs/my-jobs?employee_id=${user.id}`;
-    try {
-        const response = await fetch(endpoint, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await response.json();
-        setJobs(data.jobs || []);
-    } catch (err) {
-        console.error("Failed to fetch jobs:", err);
+  useEffect(() => {
+    fetchJobs();
+    if (user.role === "admin") {
+      fetchEmployees();
+      fetchCustomers();
     }
-};
-const fetchEmployees = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/employees", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Failed to fetch employees:", response.status, errorData);
-        return;
-      }
-      const data = await response.json();
-      setEmployees(data.employees || []);
-    } catch (err) {
-      console.error("Failed to fetch employees:", err);
-    }
-};
-const fetchCustomers = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/customers", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Failed to fetch customers:", response.status, errorData);
-        return;
-      }
-      const data = await response.json();
-      setCustomers(data.customers || []);
-    } catch (err) {
-      console.error("Failed to fetch customers:", err);
-    }
-};
-
-// ---------- Actions ----------
-const handleComplete = async (jobId) => {
+  }, [fetchJobs, fetchEmployees, fetchCustomers, user.role]);
+  // ---------- Actions ----------
+  const handleComplete = async (jobId) => {
     try {
       const response = await fetch(
         `http://localhost:3000/api/jobs/${jobId}/complete`,
@@ -95,8 +69,8 @@ const handleComplete = async (jobId) => {
     } catch (err) {
       console.error("Failed to complete job:", err);
     }
-};
-const handleCreateJob = async (e) => {
+  };
+  const handleCreateJob = async (e) => {
     e.preventDefault();
     try {
       let customerId = newJob.customer_id;
@@ -164,8 +138,8 @@ const handleCreateJob = async (e) => {
     } catch (err) {
       console.error("Failed to create job:", err);
     }
-};
-const handleCreateEmployee = async (e) => {
+  };
+  const handleCreateEmployee = async (e) => {
     e.preventDefault();
     setEmployeeError("");
     setEmployeeSuccess("");
@@ -201,8 +175,8 @@ const handleCreateEmployee = async (e) => {
     } catch (err) {
       setEmployeeError("Connection error:", err);
     }
-};
-const handleDeleteEmployee = async (id) => {
+  };
+  const handleDeleteEmployee = async (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       try {
         const response = await fetch(
@@ -221,8 +195,8 @@ const handleDeleteEmployee = async (id) => {
         console.error("Error deleting employee:", err);
       }
     }
-};
-const handleDeleteJob = async () => {
+  };
+  const handleDeleteJob = async () => {
     if (window.confirm("Are you sure you want to delete this job?")) {
       try {
         const response = await fetch(
@@ -243,21 +217,43 @@ const handleDeleteJob = async () => {
         console.error("Error deleting job:", err);
       }
     }
-};
-const handleLogout = () => {
+  };
+  const handleLogout = () => {
     onLogout();
     navigate("/login");
-};
+  };
 
-// ---------- Filtered jobs ----------
-const filteredJobs = user.role === "admin" && filterEmployee
-    ? jobs.filter((job) => String(job.employee_id) === filterEmployee)
-    : jobs;
+  // ---------- Filtered jobs ----------
+  const filteredJobs =
+    user.role === "admin" && filterEmployee
+      ? jobs.filter((job) => String(job.employee_id) === filterEmployee)
+      : jobs;
 
-// ---------- Stats (admin only) ----------
-const pendingCount = jobs.filter((j) => j.status === "pending").length;
-const inProgressCount = jobs.filter((j) => j.status === "in-progress").length;
-const completedCount = jobs.filter((j) => j.status === "completed").length;
+  // ---------- Stats (admin only) ----------
+  const pendingCount = jobs.filter((j) => j.status === "pending").length;
+  const inProgressCount = jobs.filter((j) => j.status === "in-progress").length;
+  const completedCount = jobs.filter((j) => j.status === "completed").length;
+  return {
+    newJob,
+    setNewJob,
+    customerSearch,
+    setCustomerSearch,
+    showNewCustomerForm,
+    setShowNewCustomerForm,
+    newCustomer,
+    setNewCustomer,
+    newEmployee,
+    setNewEmployee,
+    filterEmployee,
+    setFilterEmployee,
+    employeeSuccess,
+    setEmployeeSuccess,
+    employeeError,
+    setEmployeeError,
+    pendingCount,
+    inProgressCount,
+    completedCount,
+  };
+}
 
-
-export default;
+export default useFunctionLogic;
