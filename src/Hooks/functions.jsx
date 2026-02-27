@@ -17,6 +17,8 @@ function useFunctionLogic({
   fetchJobs,
   fetchEmployees,
   fetchCustomers,
+  setShowJobModal,
+  setShowDeleteJobModal,
 }) {
   const [newJob, setNewJob] = useState({
     employee_id: "",
@@ -189,6 +191,7 @@ function useFunctionLogic({
 
         if (response.ok) {
           // Refresh employee list without deleted employees
+          setEmployees(employees.filter((emp) => emp.id !== id));
           console.log("Employee deleted successfully");
         }
       } catch (err) {
@@ -250,6 +253,8 @@ function useFunctionLogic({
     setEmployeeSuccess,
     employeeError,
     setEmployeeError,
+    setShowJobModal,
+    setShowDeleteJobModal,
     pendingCount,
     inProgressCount,
     completedCount,
