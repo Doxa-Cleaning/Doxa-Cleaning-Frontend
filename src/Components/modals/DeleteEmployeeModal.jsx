@@ -28,7 +28,7 @@ function DeleteEmployeeModal({
             <option value="">Select Employee...</option>
             {employees.map((employee) => (
               <option key={employee.id} value={employee.id}>
-                {employee.users.name} - {employee.id}
+                {employee.name} - {employee.id}
               </option>
             ))}
           </select>

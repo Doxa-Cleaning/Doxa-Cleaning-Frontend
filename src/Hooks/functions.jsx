@@ -18,6 +18,7 @@ function useFunctionLogic({
   fetchEmployees,
   fetchCustomers,
   setShowJobModal,
+  setShowEmployeeModal,
   setShowDeleteJobModal,
 }) {
   const [newJob, setNewJob] = useState({
