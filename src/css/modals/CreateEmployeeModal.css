@@ -1,0 +1,33 @@
+.stats-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 140px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.stat-card--blue {
+  background: var(--secondary-blue);
+}
+.stat-card--orange {
+  background: var(--orange-light);
+}
+.stat-card--green {
+  background: var(--green-light);
+}
+.stat-card--purple {
+  background: var(--purple-light);
+}
+
+.stat-card__label {
+  font-size: 13px;
+  color: var(--gray-600);
+  margin: 0;
+}

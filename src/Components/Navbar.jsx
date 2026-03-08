@@ -1,3 +1,5 @@
+import "../css/Navbar.css";
+
 export default function NavBar({
   user,
   handleLogout,
@@ -10,60 +12,49 @@ export default function NavBar({
 }) {
   return (
     <div className="navbar">
-      <div>
-        <h2 style={{ margin: 0 }}>Doxa Cleaning</h2>
-        <p style={{ margin: 0, fontSize: "14px", color: "#666" }}>
+      <div className="navbar__brand">
+        <h2 className="navbar__title">Doxa Cleaning</h2>
+        <p className="navbar__subtitle">
           {user.role === "admin" ? "Admin Dashboard" : "My Jobs"} — Welcome,{" "}
           {user.name}
         </p>
       </div>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+      <div className="navbar__actions">
         {user.role === "admin" && (
           <>
             <button
-              className="create-btn"
+              className="btn btn--blue"
               onClick={() => setShowJobModal(true)}
             >
               + Create Job
             </button>
             <button
-              className="delete-btn"
+              className="btn btn--red"
               onClick={() => setShowDeleteJobModal(true)}
             >
               - Delete Job
             </button>
             <button
-              className="create-btn"
+              className="btn btn--green"
               onClick={() => setShowEmployeeModal(true)}
-              style={{ background: "var(--green)" }}
             >
               + Add Employee
             </button>
             <button
-              className="delete-btn"
+              className="btn btn--red"
               onClick={() => setShowDeleteEmployeeModal(true)}
             >
               - Delete Employee
             </button>
             <button
-              className="create-btn"
+              className="btn btn--purple"
               onClick={() => setShowEmployeeList(!showEmployeeList)}
-              style={{ background: "var(--purple)" }}
             >
               Employees
             </button>
           </>
         )}
-        <button
-          className="cancel-btn"
-          onClick={handleLogout}
-          style={{
-            padding: "10px 20px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: 600,
-          }}
-        >
+        <button className="btn btn--outline" onClick={handleLogout}>
           Logout
         </button>
       </div>

@@ -1,124 +1,95 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import useDataLogic from "../Hooks/useDataLogic.jsx";
+import useModals from "../Hooks/useModals.js";
+import useFunctionLogic from "../Hooks/useFunctionLogic.jsx";
+import StatsBar from "../Components/StatsBar.jsx";
 
 function Dashboard({ user, token, onLogout }) {
+  const {
+    jobs,
+    setJobs,
+    employees,
+    setEmployees,
+    customers,
+    setCustomers,
+    selectedJobId,
+    setSelectedJobId,
+    selectedEmployeeId,
+    setSelectedEmployeeId,
+    fetchJobs,
+    fetchEmployees,
+    fetchCustomers,
+  } = useDataLogic({ user, token });
+
+  const {
+    showJobModal,
+    setShowJobModal,
+    showDeleteJobModal,
+    setShowDeleteJobModal,
+    showEmployeeModal,
+    setShowEmployeeModal,
+    showDeleteEmployeeModal,
+    setShowDeleteEmployeeModal,
+    showEmployeeList,
+    setShowEmployeeList,
+  } = useModals();
+
+  const {
+    pendingCount,
+    inProgressCount,
+    completedCount,
+    filteredJobs,
+    filterEmployee,
+    setFilterEmployee,
+    handleComplete,
+    handleCreateJob,
+    handleCreateEmployee,
+    handleDeleteEmployee,
+    handleDeleteJob,
+    handleLogout,
+    newJob,
+    setNewJob,
+    customerSearch,
+    setCustomerSearch,
+    showNewCustomerForm,
+    setShowNewCustomerForm,
+    newCustomer,
+    setNewCustomer,
+    newEmployee,
+    setNewEmployee,
+    employeeError,
+    setEmployeeError,
+    employeeSuccess,
+    setEmployeeSuccess,
+  } = useFunctionLogic({
+    user,
+    token,
+    onLogout,
+    jobs,
+    setJobs,
+    employees,
+    setEmployees,
+    customers,
+    setCustomers,
+    selectedJobId,
+    setSelectedJobId,
+    fetchJobs,
+    fetchEmployees,
+    fetchCustomers,
+    setShowJobModal,
+    setShowEmployeeModal,
+    setShowDeleteJobModal,
+  });
+
   return (
     <div className="dashboard">
       {/* Admin Stats Bar */}
       {user.role === "admin" && (
-        <div
-          style={{
-            display: "flex",
-            gap: "16px",
-            marginBottom: "20px",
-            flexWrap: "wrap",
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              minWidth: "140px",
-              background: "var(--secondary-blue)",
-              padding: "16px 20px",
-              borderRadius: "10px",
-              textAlign: "center",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--primary-blue)",
-                margin: 0,
-              }}
-            >
-              {pendingCount}
-            </p>
-            <p
-              style={{ fontSize: "13px", color: "var(--gray-600)", margin: 0 }}
-            >
-              Pending
-            </p>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              minWidth: "140px",
-              background: "var(--orange-light)",
-              padding: "16px 20px",
-              borderRadius: "10px",
-              textAlign: "center",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--orange)",
-                margin: 0,
-              }}
-            >
-              {inProgressCount}
-            </p>
-            <p
-              style={{ fontSize: "13px", color: "var(--gray-600)", margin: 0 }}
-            >
-              In Progress
-            </p>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              minWidth: "140px",
-              background: "var(--green-light)",
-              padding: "16px 20px",
-              borderRadius: "10px",
-              textAlign: "center",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--green)",
-                margin: 0,
-              }}
-            >
-              {completedCount}
-            </p>
-            <p
-              style={{ fontSize: "13px", color: "var(--gray-600)", margin: 0 }}
-            >
-              Completed
-            </p>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              minWidth: "140px",
-              background: "var(--purple-light)",
-              padding: "16px 20px",
-              borderRadius: "10px",
-              textAlign: "center",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--purple)",
-                margin: 0,
-              }}
-            >
-              {employees.length}
-            </p>
-            <p
-              style={{ fontSize: "13px", color: "var(--gray-600)", margin: 0 }}
-            >
-              Employees
-            </p>
-          </div>
-        </div>
+        <StatsBar
+          pendingCount={pendingCount}
+          inProgressCount={inProgressCount}
+          completedCount={completedCount}
+          employeeCount={employees.length}
+        />
       )}
       {/* Employee Filter (admin only) */}
       {user.role === "admin" && employees.length > 0 && (

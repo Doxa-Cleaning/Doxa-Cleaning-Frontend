@@ -1,0 +1,60 @@
+.navbar {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+}
+.navbar__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.navbar__title {
+  margin: 0;
+  font-size: 20px;
+  color: var(--gray-900);
+}
+.navbar__subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--gray-500);
+}
+.navbar__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+.btn--blue {
+  background: var(--primary-blue);
+  color: white;
+}
+.btn--red {
+  background: var(--primary-red);
+  color: white;
+}
+.btn--green {
+  background: var(--green);
+  color: white;
+}
+.btn--purple {
+  background: var(--purple);
+  color: white;
+}
+.btn--outline {
+  background: white;
+  border: 2px solid var(--gray-200);
+  color: var(--gray-700);
+}
