@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Create job form
@@ -10,8 +10,6 @@ function useFunctionLogic({
   setJobs,
   employees,
   setEmployees,
-  customers,
-  setCustomers,
   selectedJobId,
   setSelectedJobId,
   fetchJobs,
@@ -50,14 +48,6 @@ function useFunctionLogic({
   const [employeeSuccess, setEmployeeSuccess] = useState("");
   const [employeeError, setEmployeeError] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchJobs();
-    if (user.role === "admin") {
-      fetchEmployees();
-      fetchCustomers();
-    }
-  }, [fetchJobs, fetchEmployees, fetchCustomers, user.role]);
   // ---------- Actions ----------
   const handleComplete = async (jobId) => {
     try {
@@ -259,6 +249,13 @@ function useFunctionLogic({
     pendingCount,
     inProgressCount,
     completedCount,
+    filteredJobs,
+    handleComplete,
+    handleCreateJob,
+    handleCreateEmployee,
+    handleDeleteEmployee,
+    handleDeleteJob,
+    handleLogout,
   };
 }
 

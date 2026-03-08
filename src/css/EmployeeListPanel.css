@@ -1,0 +1,66 @@
+.employee-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.employee-panel__title {
+  margin-bottom: 16px;
+}
+
+.employee-panel__empty {
+  color: var(--gray-500);
+}
+
+.employee-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.employee-card {
+  padding: 16px;
+  border: 2px solid var(--gray-200);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.employee-card:hover {
+  border-color: var(--primary-blue);
+}
+
+.employee-card__name {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.employee-card__email {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin: 0 0 2px 0;
+}
+
+.employee-card__phone {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin: 0 0 4px 0;
+}
+
+.employee-card__status {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.employee-card__status--active {
+  color: var(--orange);
+}
+.employee-card__status--clear {
+  color: var(--green);
+}
+.employee-card__status--inactive {
+  color: var(--gray-500);
+}

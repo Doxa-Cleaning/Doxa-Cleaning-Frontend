@@ -39,7 +39,7 @@ function DeleteEmployeeModal({
           </button>
           <button
             className="delete-btn"
-            onClick={handleDeleteEmployee}
+            onClick={() => handleDeleteEmployee(selectedEmployeeId)}
             disabled={!selectedEmployeeId}
           >
             Delete
