@@ -1,0 +1,17 @@
+.employee-filter {
+  margin-bottom: 20px;
+}
+
+.employee-filter__select {
+  padding: 10px 16px;
+  border: 2px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  min-width: 220px;
+  cursor: pointer;
+}
+.employee-filter__select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+}
