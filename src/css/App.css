@@ -412,6 +412,6 @@ body {
   color: var(--gray-500);
 }
 
-.job-empty__message {
+.jobs-empty__message {
   font-size: 18px;
 }

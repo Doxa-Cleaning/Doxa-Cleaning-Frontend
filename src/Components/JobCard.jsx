@@ -15,7 +15,7 @@ export default function JobCard({ job, user, handleComplete }) {
         <p className="job-card__phone">Phone: {job.customer_phone}</p>
       )}
       {job.employee_name && (
-        <p className="job-card__employee">Assigned to: {job.employees_name}</p>
+        <p className="job-card__employee">Assigned to: {job.employee_name}</p>
       )}
       {job.scheduled_date && (
         <p className="job-card__schedule">

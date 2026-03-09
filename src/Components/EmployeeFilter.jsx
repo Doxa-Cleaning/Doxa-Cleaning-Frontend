@@ -1,4 +1,4 @@
-import "../css/EmployeeFilter.css";
+import "../css/filterEmployee.css";
 
 export default function EmployeeFilter({
   employees,

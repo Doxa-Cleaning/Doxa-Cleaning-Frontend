@@ -30,7 +30,7 @@ export default function EmployeeListPanel({
                 }}
               >
                 <p className="employee-card__name">{emp.name}</p>
-                <p classname="employee-card__email">{emp.email}</p>
+                <p className="employee-card__email">{emp.email}</p>
                 {emp.phone && (
                   <p className="employee-card__phone">{emp.phone}</p>
                 )}

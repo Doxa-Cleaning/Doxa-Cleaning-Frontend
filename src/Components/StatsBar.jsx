@@ -1,4 +1,4 @@
-import "../CSS/StatsBar.css";
+import "../css/StatsBar.css";
 
 function StatsBar({
   pendingCount,
@@ -10,7 +10,7 @@ function StatsBar({
     <div className="stats-bar">
       <div className="stat-card stat-card--blue">
         <p className="stat-card__number">{pendingCount}</p>
-        <p classname="stat-card__label">Pending</p>
+        <p className="stat-card__label">Pending</p>
       </div>
       <div className="stat-card stat-card--orange">
         <p className="stat-card__number">{inProgressCount}</p>
@@ -22,7 +22,7 @@ function StatsBar({
       </div>
       <div className="stat-card stat-card--purple">
         <p className="stat-card__number">{employeeCount}</p>
-        <p className="stat-card_label">Employees</p>
+        <p className="stat-card__label">Employees</p>
       </div>
     </div>
   );
