@@ -1,4 +1,6 @@
 import Navbar from "../Components/Navbar.jsx";
+import JobCard from "../Components/JobCard.jsx";
+import EmployeeFilter from "../Components/EmployeeFilter.jsx";
 import CreateJobModal from "../Components/modals/CreateJobModal.jsx";
 import DeleteJobModal from "../Components/modals/DeleteJobModal.jsx";
 import CreateEmployeeModal from "../Components/modals/CreateEmployeeModal.jsx";
@@ -88,6 +90,17 @@ function Dashboard({ user, token, onLogout }) {
 
   return (
     <div className="dashboard">
+      {/* Navbar */}
+      <Navbar
+        user={user}
+        handleLogout={handleLogout}
+        setShowJobModal={setShowJobModal}
+        setShowDeleteJobModal={setShowDeleteJobModal}
+        setShowEmployeeModal={setShowEmployeeModal}
+        setShowDeleteEmployeeModal={setShowDeleteEmployeeModal}
+        showEmployeeList={showEmployeeList}
+        setShowEmployeeList={setShowEmployeeList}
+      />
       {/* Admin Stats Bar */}
       {user.role === "admin" && (
         <StatsBar
@@ -99,27 +112,11 @@ function Dashboard({ user, token, onLogout }) {
       )}
       {/* Employee Filter (admin only) */}
       {user.role === "admin" && employees.length > 0 && (
-        <div style={{ marginBottom: "20px" }}>
-          <select
-            value={filterEmployee}
-            onChange={(e) => setFilterEmployee(e.target.value)}
-            style={{
-              padding: "10px 16px",
-              border: "2px solid var(--gray-200)",
-              borderRadius: "8px",
-              fontSize: "14px",
-              backgroundColor: "white",
-              minWidth: "220px",
-            }}
-          >
-            <option value="">All Jobs (All Employees)</option>
-            {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>
-                {emp.name}'s Jobs
-              </option>
-            ))}
-          </select>
-        </div>
+        <EmployeeFilter
+          employees={employees}
+          filterEmployee={filterEmployee}
+          setFilterEmployee={setFilterEmployee}
+        />
       )}
       {/* Employee List Panel */}
       {showEmployeeList && user.role === "admin" && (
@@ -132,14 +129,8 @@ function Dashboard({ user, token, onLogout }) {
       )}
       {/* Jobs Grid */}
       {filteredJobs.length === 0 ? (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "60px",
-            color: "var(--gray-500)",
-          }}
-        >
-          <p style={{ fontSize: "18px" }}>
+        <div className="jobs-empty">
+          <p className="jobs-empty__message">
             {filterEmployee ? "No jobs for this employee" : "No jobs yet"}
           </p>
           {user.role === "admin" && !filterEmployee && (
@@ -147,17 +138,8 @@ function Dashboard({ user, token, onLogout }) {
           )}
           {filterEmployee && (
             <button
+              className="btn btn--blue"
               onClick={() => setFilterEmployee("")}
-              style={{
-                marginTop: "12px",
-                padding: "8px 16px",
-                background: "var(--primary-blue)",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: 600,
-              }}
             >
               Show All Jobs
             </button>
@@ -166,41 +148,61 @@ function Dashboard({ user, token, onLogout }) {
       ) : (
         <div className="jobs-grid">
           {filteredJobs.map((job) => (
-            <div
+            <JobCard
               key={job.id}
-              className={`job-card ${job.status === "completed" ? "completed" : ""}`}
-            >
-              <h3>{job.customer_name}</h3>
-              <p>
-                {job.street_add1 &&
-                  `${job.street_add1}, ${job.city}, ${job.state}`}
-              </p>
-              {job.customer_phone && <p>Phone: {job.customer_phone}</p>}
-              {job.employee_name && <p>Assigned to: {job.employee_name}</p>}
-              {job.scheduled_date && (
-                <p>
-                  {new Date(job.scheduled_date).toLocaleDateString()} at{" "}
-                  {new Date(
-                    `1970-01-01T${job.scheduled_time}`,
-                  ).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </p>
-              )}
-              <span className={`status-badge ${job.status}`}>{job.status}</span>
-              {user.role !== "admin" && job.status !== "completed" && (
-                <button
-                  className="complete-btn"
-                  onClick={() => handleComplete(job.id)}
-                >
-                  Mark Complete
-                </button>
-              )}
-            </div>
+              job={job}
+              user={user}
+              handleComplete={handleComplete}
+            />
           ))}
         </div>
+      )}
+      {/* Modals */}
+      {showJobModal && (
+        <CreateJobModal
+          handleCreateJob={handleCreateJob}
+          showNewCustomerForm={showNewCustomerForm}
+          customerSearch={customerSearch}
+          setCustomerSearch={setCustomerSearch}
+          setNewJob={setNewJob}
+          newJob={newJob}
+          customers={customers}
+          employees={employees}
+          setShowNewCustomerForm={setShowNewCustomerForm}
+          newCustomer={newCustomer}
+          setNewCustomer={setNewCustomer}
+          onClose={() => setShowJobModal(false)}
+        />
+      )}
+      {showDeleteJobModal && (
+        <DeleteJobModal
+          selectedJobId={selectedJobId}
+          setSelectedJobId={setSelectedJobId}
+          jobs={jobs}
+          handleDeleteJob={handleDeleteJob}
+          onClose={() => setShowDeleteJobModal(false)}
+        />
+      )}
+      {showEmployeeModal && (
+        <CreateEmployeeModal
+          employeeError={employeeError}
+          employeeSuccess={employeeSuccess}
+          newEmployee={newEmployee}
+          handleCreateEmployee={handleCreateEmployee}
+          setNewEmployee={setNewEmployee}
+          setEmployeeError={setEmployeeError}
+          setEmployeeSuccess={setEmployeeSuccess}
+          onClose={() => setShowEmployeeModal(false)}
+        />
+      )}
+      {showDeleteEmployeeModal && (
+        <DeleteEmployeeModal
+          selectedEmployeeId={selectedEmployeeId}
+          setSelectedEmployeeId={setSelectedEmployeeId}
+          employees={employees}
+          handleDeleteEmployee={handleDeleteEmployee}
+          onClose={() => setShowDeleteEmployeeModal(false)}
+        />
       )}
     </div>
   );

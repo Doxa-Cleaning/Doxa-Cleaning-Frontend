@@ -405,3 +405,13 @@ body {
   color: white;
   border: none;
 }
+
+.jobs-empty {
+  text-align: center;
+  padding: 60px;
+  color: var(--gray-500);
+}
+
+.job-empty__message {
+  font-size: 18px;
+}
