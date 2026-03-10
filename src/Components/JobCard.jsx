@@ -1,6 +1,6 @@
 import "../css/JobCard.css";
 
-export default function JobCard({ job, user, handleComplete }) {
+export default function JobCard({ job, user, handleComplete, handleStartJob }) {
   return (
     <div
       className={`job-card ${job.status === "completed" ? "completed" : ""}`}
@@ -28,6 +28,11 @@ export default function JobCard({ job, user, handleComplete }) {
         </p>
       )}
       <span className={`status-badge ${job.status}`}>{job.status}</span>
+      {user.role === "employee" && job.status !== "In-progress" && (
+        <button className="start-btn" onClick={() => handleStartJob(job.id)}>
+          Start Job
+        </button>
+      )}
       {user.role === "employee" && job.status !== "completed" && (
         <button className="complete-btn" onClick={() => handleComplete(job.id)}>
           Mark Complete

@@ -49,6 +49,20 @@ function useFunctionLogic({
   const [employeeError, setEmployeeError] = useState("");
   const navigate = useNavigate();
   // ---------- Actions ----------
+  const handleStartJob = async (jobId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/jobs/${jobId}/in-progress`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer: ${token}` },
+        },
+      );
+      if (response.ok) fetchJobs();
+    } catch (err) {
+      console.error("Failed to start job:", err);
+    }
+  };
   const handleComplete = async (jobId) => {
     try {
       const response = await fetch(
@@ -250,6 +264,7 @@ function useFunctionLogic({
     inProgressCount,
     completedCount,
     filteredJobs,
+    handleStartJob,
     handleComplete,
     handleCreateJob,
     handleCreateEmployee,

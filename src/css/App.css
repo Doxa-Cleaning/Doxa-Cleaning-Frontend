@@ -315,6 +315,18 @@ body {
   color: var(--green);
 }
 
+.start-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background: var(--orange);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 .complete-btn {
   margin-top: 15px;
   width: 100%;
