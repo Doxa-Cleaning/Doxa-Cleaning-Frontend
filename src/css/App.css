@@ -280,6 +280,11 @@ body {
   border-left: 4px solid var(--primary-blue);
 }
 
+.job-card.in-progress {
+  border-left-color: var(--orange);
+  opacity: 0.7;
+}
+
 .job-card.completed {
   border-left-color: var(--green);
   opacity: 0.7;
@@ -310,6 +315,11 @@ body {
   color: var(--primary-blue);
 }
 
+.status-badge.in-progress {
+  background: var(--orange-light);
+  color: var(--orange);
+}
+
 .status-badge.completed {
   background: var(--green-light);
   color: var(--green);
@@ -325,6 +335,11 @@ body {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.start-btn:disabled {
+  background: var(--gray-300);
+  cursor: not-allowed;
 }
 
 .complete-btn {

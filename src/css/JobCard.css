@@ -6,6 +6,11 @@
   border-left: 4px solid var(--primary-blue);
 }
 
+.job-card.in-progress {
+  border-left-color: var(--orange);
+  opacity: 0.7;
+}
+
 .job-card.completed {
   border-left-color: var(--green);
   opacity: 0.7;
