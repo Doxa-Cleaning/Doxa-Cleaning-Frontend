@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Create job form
 function useFunctionLogic({
   user,
   token,
@@ -18,6 +17,7 @@ function useFunctionLogic({
   setShowJobModal,
   setShowEmployeeModal,
   setShowDeleteJobModal,
+  setShowEditJobModal,
 }) {
   const [newJob, setNewJob] = useState({
     employee_id: "",
@@ -226,6 +226,17 @@ function useFunctionLogic({
       }
     }
   };
+  const handleEditJob = async (jobId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/jobs/${jobId}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) fetchJobs();
+    } catch (err) {
+      console.log("Failed to edit job:", err);
+    }
+  };
   const handleLogout = () => {
     onLogout();
     navigate("/login");
@@ -260,6 +271,7 @@ function useFunctionLogic({
     setEmployeeError,
     setShowJobModal,
     setShowDeleteJobModal,
+    setShowEditJobModal,
     pendingCount,
     inProgressCount,
     completedCount,
@@ -270,6 +282,7 @@ function useFunctionLogic({
     handleCreateEmployee,
     handleDeleteEmployee,
     handleDeleteJob,
+    handleEditJob,
     handleLogout,
   };
 }
