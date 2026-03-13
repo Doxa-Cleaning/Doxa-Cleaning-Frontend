@@ -48,6 +48,7 @@ function Dashboard({ user, token, onLogout }) {
     filteredJobs,
     filterEmployee,
     setFilterEmployee,
+    handleStartJob,
     handleComplete,
     handleCreateJob,
     handleCreateEmployee,
@@ -152,6 +153,7 @@ function Dashboard({ user, token, onLogout }) {
               key={job.id}
               job={job}
               user={user}
+              handleStartJob={handleStartJob}
               handleComplete={handleComplete}
             />
           ))}

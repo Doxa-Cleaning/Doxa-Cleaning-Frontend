@@ -3,7 +3,7 @@ import "../css/JobCard.css";
 export default function JobCard({ job, user, handleComplete, handleStartJob }) {
   return (
     <div
-      className={`job-card ${job.status === "completed" ? "completed" : ""}`}
+      className={`job-card ${job.status === "completed" ? "completed" : ""} ${job.status === "in-progress" ? "in-progress" : ""}`}
     >
       <h3 className="job-card__customer">{job.customer_name}</h3>
       {job.street_add1 && (
@@ -28,7 +28,7 @@ export default function JobCard({ job, user, handleComplete, handleStartJob }) {
         </p>
       )}
       <span className={`status-badge ${job.status}`}>{job.status}</span>
-      {user.role === "employee" && job.status !== "In-progress" && (
+      {user.role === "employee" && job.status === "pending" && (
         <button className="start-btn" onClick={() => handleStartJob(job.id)}>
           Start Job
         </button>
