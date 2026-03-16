@@ -1,6 +1,13 @@
 import "../css/JobCard.css";
 
-export default function JobCard({ job, user, handleComplete, handleStartJob }) {
+export default function JobCard({
+  job,
+  user,
+  handleComplete,
+  handleStartJob,
+  setEditingJob,
+  setShowEditJobModal,
+}) {
   return (
     <div
       className={`job-card ${job.status === "completed" ? "completed" : ""} ${job.status === "in-progress" ? "in-progress" : ""}`}
@@ -27,6 +34,7 @@ export default function JobCard({ job, user, handleComplete, handleStartJob }) {
           })}
         </p>
       )}
+      {job.notes && <p className="job-card__notes">{job.notes}</p>}
       <span className={`status-badge ${job.status}`}>{job.status}</span>
       {user.role === "employee" && job.status === "pending" && (
         <button className="start-btn" onClick={() => handleStartJob(job.id)}>
@@ -36,6 +44,18 @@ export default function JobCard({ job, user, handleComplete, handleStartJob }) {
       {user.role === "employee" && job.status !== "completed" && (
         <button className="complete-btn" onClick={() => handleComplete(job.id)}>
           Mark Complete
+        </button>
+      )}
+      {user.role === "admin" && (
+        <button
+          className="btn btn--blue"
+          style={{ marginTop: "15px", width: "100%" }}
+          onClick={() => {
+            setEditingJob(job);
+            setShowEditJobModal(true);
+          }}
+        >
+          Edit Job
         </button>
       )}
     </div>

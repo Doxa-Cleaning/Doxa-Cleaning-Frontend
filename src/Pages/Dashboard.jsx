@@ -1,10 +1,13 @@
 import Navbar from "../Components/Navbar.jsx";
 import JobCard from "../Components/JobCard.jsx";
 import EmployeeFilter from "../Components/EmployeeFilter.jsx";
+
 import CreateJobModal from "../Components/modals/CreateJobModal.jsx";
 import DeleteJobModal from "../Components/modals/DeleteJobModal.jsx";
 import CreateEmployeeModal from "../Components/modals/CreateEmployeeModal.jsx";
 import DeleteEmployeeModal from "../Components/modals/DeleteEmployeeModal.jsx";
+import EditJobModal from "../Components/modals/EditJobModal.jsx";
+
 import EmployeeListPanel from "../Components/EmployeeListPanel.jsx";
 import useDataLogic from "../Hooks/useDataLogic.jsx";
 import useModals from "../Hooks/useModals.jsx";
@@ -39,6 +42,8 @@ function Dashboard({ user, token, onLogout }) {
     setShowDeleteEmployeeModal,
     showEmployeeList,
     setShowEmployeeList,
+    showEditJobModal,
+    setShowEditJobModal,
   } = useModals();
 
   const {
@@ -54,7 +59,10 @@ function Dashboard({ user, token, onLogout }) {
     handleCreateEmployee,
     handleDeleteEmployee,
     handleDeleteJob,
+    handleEditJob,
     handleLogout,
+    editingJob,
+    setEditingJob,
     newJob,
     setNewJob,
     customerSearch,
@@ -87,6 +95,7 @@ function Dashboard({ user, token, onLogout }) {
     setShowJobModal,
     setShowEmployeeModal,
     setShowDeleteJobModal,
+    setShowEditJobModal,
   });
 
   return (
@@ -155,6 +164,8 @@ function Dashboard({ user, token, onLogout }) {
               user={user}
               handleStartJob={handleStartJob}
               handleComplete={handleComplete}
+              setEditingJob={setEditingJob}
+              setShowEditJobModal={setShowEditJobModal}
             />
           ))}
         </div>
@@ -204,6 +215,18 @@ function Dashboard({ user, token, onLogout }) {
           employees={employees}
           handleDeleteEmployee={handleDeleteEmployee}
           onClose={() => setShowDeleteEmployeeModal(false)}
+        />
+      )}
+      {showEditJobModal && (
+        <EditJobModal
+          editingJob={editingJob}
+          setEditingJob={setEditingJob}
+          handleEditJob={handleEditJob}
+          employees={employees}
+          onClose={() => {
+            setShowEditJobModal(false);
+            setEditingJob(null);
+          }}
         />
       )}
     </div>
