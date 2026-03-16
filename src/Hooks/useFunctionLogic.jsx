@@ -26,6 +26,7 @@ function useFunctionLogic({
     scheduled_time: "",
     estimated_duration: "",
   });
+  const [editingJob, setEditingJob] = useState(null);
   const [customerSearch, setCustomerSearch] = useState("");
   const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
   const [newCustomer, setNewCustomer] = useState({
@@ -226,15 +227,33 @@ function useFunctionLogic({
       }
     }
   };
-  const handleEditJob = async (jobId) => {
+  const handleEditJob = async (e) => {
+    e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/jobs/${jobId}`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) fetchJobs();
+      const response = await fetch(
+        `http://localhost:3000/api/jobs/${editingJob.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            employee_id: editingJob.employee_id,
+            scheduled_date: editingJob.scheduled_date,
+            scheduled_time: editingJob.scheduled_time,
+            status: editingJob.status,
+            notes: editingJob.notes,
+          }),
+        },
+      );
+      if (response.ok) {
+        setShowEditJobModal(false);
+        setEditingJob(null);
+        fetchJobs();
+      }
     } catch (err) {
-      console.log("Failed to edit job:", err);
+      console.error("Failed to edit job:", err);
     }
   };
   const handleLogout = () => {
@@ -255,6 +274,8 @@ function useFunctionLogic({
   return {
     newJob,
     setNewJob,
+    editingJob,
+    setEditingJob,
     customerSearch,
     setCustomerSearch,
     showNewCustomerForm,

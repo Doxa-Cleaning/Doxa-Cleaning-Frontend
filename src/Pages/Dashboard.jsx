@@ -7,7 +7,7 @@ import CreateEmployeeModal from "../Components/modals/CreateEmployeeModal.jsx";
 import DeleteEmployeeModal from "../Components/modals/DeleteEmployeeModal.jsx";
 import EmployeeListPanel from "../Components/EmployeeListPanel.jsx";
 import useDataLogic from "../Hooks/useDataLogic.jsx";
-import useModals from "../Hooks/useModals.js";
+import useModals from "../Hooks/useModals.jsx";
 import useFunctionLogic from "../Hooks/useFunctionLogic.jsx";
 import StatsBar from "../Components/StatsBar.jsx";
 
