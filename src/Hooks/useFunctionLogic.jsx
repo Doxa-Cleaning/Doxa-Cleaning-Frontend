@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../config.js";
 
 function useFunctionLogic({
   user,
@@ -52,13 +53,10 @@ function useFunctionLogic({
   // ---------- Actions ----------
   const handleStartJob = async (jobId) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/jobs/${jobId}/in-progress`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer: ${token}` },
-        },
-      );
+      const response = await fetch(`${API_URL}/api/jobs/${jobId}/in-progress`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.ok) fetchJobs();
     } catch (err) {
       console.error("Failed to start job:", err);
@@ -66,13 +64,10 @@ function useFunctionLogic({
   };
   const handleComplete = async (jobId) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/jobs/${jobId}/complete`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const response = await fetch(`${API_URL}/api/jobs/${jobId}/complete`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.ok) fetchJobs();
     } catch (err) {
       console.error("Failed to complete job:", err);
@@ -85,7 +80,7 @@ function useFunctionLogic({
 
       // If admin filled out new customer form, create that customer first
       if (showNewCustomerForm) {
-        const customerRes = await fetch("http://localhost:3000/api/customers", {
+        const customerRes = await fetch(`${API_URL}/api/customers`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -104,7 +99,7 @@ function useFunctionLogic({
       }
 
       // Creates job using whichever customerId we ended up with
-      const response = await fetch("http://localhost:3000/api/jobs", {
+      const response = await fetch(`${API_URL}/api/jobs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -153,7 +148,7 @@ function useFunctionLogic({
     setEmployeeSuccess("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/register", {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,13 +182,10 @@ function useFunctionLogic({
   const handleDeleteEmployee = async (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/employees/${id}`,
-          {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const response = await fetch(`${API_URL}/api/employees/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (response.ok) {
           // Refresh employee list without deleted employees
@@ -208,13 +200,10 @@ function useFunctionLogic({
   const handleDeleteJob = async () => {
     if (window.confirm("Are you sure you want to delete this job?")) {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/jobs/${selectedJobId}`,
-          {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const response = await fetch(`${API_URL}/api/jobs/${selectedJobId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (!response.ok) throw new Error("Failed to delete job");
 
@@ -230,23 +219,20 @@ function useFunctionLogic({
   const handleEditJob = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/jobs/${editingJob.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            employee_id: editingJob.employee_id,
-            scheduled_date: editingJob.scheduled_date,
-            scheduled_time: editingJob.scheduled_time,
-            status: editingJob.status,
-            notes: editingJob.notes,
-          }),
+      const response = await fetch(`${API_URL}/api/jobs/${editingJob.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          employee_id: editingJob.employee_id,
+          scheduled_date: editingJob.scheduled_date,
+          scheduled_time: editingJob.scheduled_time,
+          status: editingJob.status,
+          notes: editingJob.notes,
+        }),
+      });
       if (response.ok) {
         setShowEditJobModal(false);
         setEditingJob(null);

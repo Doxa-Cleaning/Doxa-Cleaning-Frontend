@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-
+import API_URL from "../config.js";
 export default function useDataLogic({ user, token }) {
   const [jobs, setJobs] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -11,8 +11,8 @@ export default function useDataLogic({ user, token }) {
   const fetchJobs = useCallback(() => {
     const jobEndpoint =
       user.role === "admin"
-        ? "http://localhost:3000/api/jobs"
-        : `http://localhost:3000/api/jobs/my-jobs?employee_id=${user.id}`;
+        ? `${API_URL}/api/jobs`
+        : `${API_URL}/api/jobs/my-jobs?employee_id=${user.id}`;
 
     fetch(jobEndpoint, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
@@ -20,7 +20,7 @@ export default function useDataLogic({ user, token }) {
       .catch((err) => console.error("Failed to fetch jobs:", err));
   }, [user.role, user.id, token]);
   const fetchEmployees = useCallback(() => {
-    fetch("http://localhost:3000/api/employees", {
+    fetch(`${API_URL}/api/employees`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -28,7 +28,7 @@ export default function useDataLogic({ user, token }) {
       .catch((err) => console.error("Failed to fetch employees:", err));
   }, [token]);
   const fetchCustomers = useCallback(() => {
-    fetch("http://localhost:3000/api/customers", {
+    fetch(`${API_URL}/api/customers`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
