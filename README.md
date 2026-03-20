@@ -3,7 +3,7 @@
 A React-based job management dashboard for a small cleaning business. Built as a full-stack capstone project by Emiliano Canseco III.
 
 ## Live Demo
-[Coming soon after deployment]
+[Doxa Cleaning](https://doxa-frontend-ten.vercel.app)
 
 ## GitHub
 - Frontend: https://github.com/Emiliano-Canseco-III/Doxa-Cleaning-Frontend
